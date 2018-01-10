@@ -21,10 +21,45 @@ class LaunchpadMK2:
         self.read = midi.Input(readChennel)
         self.output = midi.Output(outputChannel)
 
-    def turnOnXY(self, lightXY, color):
-        self.output.note_on(note=self.COORDS_SESSION[lightXY[1]][lightXY[0]], velocity=color, channel=0)
+    def turnOnXY(self, lightXY, color=36):
+        self.output.note_on(note=self.COORDS_SESSION[lightXY[0]][lightXY[1]], velocity=color, channel=0)
 
+    def turnOffXY(self, lightXY):
+        self.output.note_off(note=self.COORDS_SESSION[lightXY[0]][lightXY[1]], channel=0)
+
+    def multiOffXY(self, lightXY):
+        for i in range(len(lightXY)):
+            self.output.note_off(note=self.COORDS_SESSION[lightXY[i][0]][lightXY[i][1]], channel=0)
+
+    def reset(self):
+        for i in range(max(max(self.COORDS_SESSION))):
+            self.output.note_off(note=i, channel=0)
+
+    def printLetter(self, letter, color=36, time=1):
+        letter = self.getLetter("A")
+        for i in range(len(letter)):
+            self.turnOnXY(letter[i], color)
+        self.multiOffXY(letter)
+    
+    def scrollWord(self, letter, color=36, time=0):
+        pass
+
+    @staticmethod
+    def getLetter(image):
+        images = json.load(open("Chars.json"))
+        letter = images["letters"]
+        return letter[image]
+
+    @staticmethod
+    def getWord(image):
+        pass
 
 if __name__ == "__main__":
     lp = LaunchpadMK2(1, 3)
-    lp.turnOnXY([0, 1], 44)
+
+    #lp.printLetter("A")
+    print(len(lp.getLetter("A")))
+    lp.scrollWord("H")
+    sleep(2)
+    lp.reset()
+    midi.quit()
