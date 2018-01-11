@@ -2,6 +2,7 @@ from pygame import midi
 import json
 from time import sleep
 import numpy as np
+from pprint import pprint
 
 class LaunchpadMK2:
 
@@ -32,34 +33,96 @@ class LaunchpadMK2:
             self.output.note_off(note=self.COORDS_SESSION[lightXY[i][0]][lightXY[i][1]], channel=0)
 
     def reset(self):
-        for i in range(max(max(self.COORDS_SESSION))):
+        for i in range(max(max(self.COORDS_SESSION)) +1):
             self.output.note_off(note=i, channel=0)
 
     def printLetter(self, letter, color=36, time=1):
-        letter = self.getLetter("A")
-        for i in range(len(letter)):
-            self.turnOnXY(letter[i], color)
-        self.multiOffXY(letter)
+        if type(letter) == str:
+            letter = self.getLetter(letter)
+            for i in range(len(letter)):
+                self.turnOnXY(letter[i], color)
+        else:
+            for i in range(len(letter)):
+                self.turnOnXY(letter[i], color)
+
+
+        sleep(time)
+        #self.multiOffXY(letter)
+        self.reset()
     
     def scrollWord(self, letter, color=36, time=0):
-        pass
+
+        #If the word is a single letter
+        if len(letter) < 2:
+            letter = self.getLetter(letter)
+            for i in range(len(letter)):
+                letter[i][1] += 9
+            
+            for i in range(10):
+                
+                try:
+                    self.printLetter(letter, time=0.1)
+                except:
+                    pass
+
+                for n in range(len(letter)):
+                    letter[n][1] -= 1
+            print("A single letter")
+
+        #If the word is more than 1
+        elif len(letter) > 1:
+            letters = [[] for x in range(len(letter))]
+
+            letter = self.getWord(letter)
+            
+            for i in range(len(letter)):
+                for n in range(len(letter[i])):
+                    letter[i][n][1] += 9 * i
+            
+            print(len(letters))
+            pprint(letter)
+            for i in range(10 ** len(letters)):
+                
+                try:
+                    
+                    for n in range(len(letter)):
+                        
+                        self.printLetter(letter[n], time=0.016)
+                except:
+                    pass
+
+                for n in range(len(letter)):
+                    for x in range(len(letter[n])):
+                        if letter [n][x][1] < -6:
+                            letter[n][x][1] = -25
+                            
+                        letter[n][x][1] -= 1
+            print("A word")
 
     @staticmethod
     def getLetter(image):
         images = json.load(open("Chars.json"))
         letter = images["letters"]
-        return letter[image]
+        return letter[image.upper()]
 
     @staticmethod
-    def getWord(image):
-        pass
+    def getWord(word):
+        chars = json.load(open("Chars.json"))
+        letters = chars["letters"]
+        outp = [[] for x in range(len(word))]
+
+        for i in range(len(word)):
+            outp[i] = letters[word[i].upper()]
+
+        return outp
 
 if __name__ == "__main__":
     lp = LaunchpadMK2(1, 3)
+    lp.reset()
 
     #lp.printLetter("A")
-    print(len(lp.getLetter("A")))
-    lp.scrollWord("H")
-    sleep(2)
+    lp.scrollWord("Range")
+
+
     lp.reset()
     midi.quit()
