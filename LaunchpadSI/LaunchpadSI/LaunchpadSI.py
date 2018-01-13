@@ -42,6 +42,7 @@ class LaunchpadMK2:
             for i in range(len(letter)):
                 self.turnOnXY(letter[i], color)
         else:
+            
             for i in range(len(letter)):
                 self.turnOnXY(letter[i], color)
 
@@ -70,6 +71,7 @@ class LaunchpadMK2:
             print("A single letter")
 
         #If the word is more than 1
+        #Word
         elif len(letter) > 1:
             letters = [[] for x in range(len(letter))]
 
@@ -79,25 +81,22 @@ class LaunchpadMK2:
                 for n in range(len(letter[i])):
                     letter[i][n][1] += 9 * i
             
-            print(len(letters))
-            pprint(letter)
-            for i in range(10 ** len(letters)):
-                
-                try:
+
+            for i in range(10 * len(letters)):
+                for n in range(len(letter)):
+                    try:
                     
-                    for n in range(len(letter)):
+                        self.printLetter(letter[n], time=1)
                         
-                        self.printLetter(letter[n], time=0.016)
-                except:
-                    pass
+                    except IndexError:
+                        pass
 
                 for n in range(len(letter)):
                     for x in range(len(letter[n])):
-                        if letter [n][x][1] < -6:
+                        letter[n][x][1] -= 1
+                        if letter [n][x][1] < -1:
                             letter[n][x][1] = -25
                             
-                        letter[n][x][1] -= 1
-            print("A word")
 
     @staticmethod
     def getLetter(image):
@@ -118,8 +117,6 @@ class LaunchpadMK2:
 
 if __name__ == "__main__":
     lp = LaunchpadMK2(1, 3)
-    lp.reset()
-
     #lp.printLetter("A")
     lp.scrollWord("Range")
 
