@@ -3,6 +3,7 @@ import json
 from time import sleep
 import numpy as np
 from pprint import pprint
+from random import randint
 
 class LaunchpadMK2:
 
@@ -78,14 +79,15 @@ class LaunchpadMK2:
 
             letter = self.getWord(letter)
             
-            d = letter
+            
+            #This piece of code is the bane of my existence.
+            for i in range(len(letter)):
+                for n in range(len(letter[i])):
+                    letter[i][n][1] += 9 * i
+                    
             with open("Debug.json", "w") as outfile:
                 json.dump(d, outfile)
-            for i in range(len(d)):
-                for n in range(len(d[i])):
-                    d[i][n][1] += 9 * i
-                    print(i)
-
+            
             for i in range(10 * len(letter)):
 
                 for n in range(len(letter)):
@@ -111,6 +113,38 @@ class LaunchpadMK2:
                         
                 self.reset()
                             
+    def readButtonPressed(self):
+        coord = None
+        state = None
+        r = self.read.read(1)
+        #print("Read value: {}".format(r))
+        if len(r) > 0 and r[0][0][2] == 127:
+            try:
+                for i, subList in enumerate(self.COORDS_SESSION):
+                    if r[0][0][1] in subList:
+                        place = subList.index(r[0][0][1])
+
+                        coord = [i, place]
+                        state = True
+
+            except IndexError as e:
+                coord = None
+
+        elif len(r) > 0 and r[0][0][2] == 0:
+            try:
+                for i, subList in enumerate(self.COORDS_SESSION):
+                    if r[0][0][1] in subList:
+                        place = subList.index(r[0][0][1])
+                        
+                        coord = [i, place]
+                        state = False
+            except IndexError as e:
+                coord = None
+
+        else:
+            coord = None
+
+        return coord, state
 
     @staticmethod
     def getLetter(image):
@@ -131,10 +165,29 @@ class LaunchpadMK2:
         return outp
 
 if __name__ == "__main__":
+    print("Starting...")
     lp = LaunchpadMK2(1, 3)
+    lp.reset()
     #lp.printLetter("A")
-    lp.scrollWord("Zak")
-
+    #lp.scrollWord("Lol") - Never uncomment this. Ever.
+    print("Running!")
+    
+    while True:
+        
+        s = lp.readButtonPressed()
+        if s[0] and s[1] is not None:
+            print(s[0])
+        
+        if s[0] == [7, 8]:
+            lp.reset()
+            midi.quit()
+            quit()
+        
+        elif s[1]:
+            lp.turnOnXY(s[0])
+            
+        elif s[1] is False:
+            lp.turnOffXY(s[0])
 
     lp.reset()
     midi.quit()
