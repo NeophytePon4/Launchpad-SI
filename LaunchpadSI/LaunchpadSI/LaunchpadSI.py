@@ -22,6 +22,8 @@ class LaunchpadMK2:
         midi.init()
         self.read = midi.Input(readChennel)
         self.output = midi.Output(outputChannel)
+    def turnOn(self, light, color=36):
+        self.output.note_on(note=light, velocity=color, channel=0)
 
     def turnOnXY(self, lightXY, color=36):
         self.output.note_on(note=self.COORDS_SESSION[lightXY[0]][lightXY[1]], velocity=color, channel=0)

@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>3b9430bb-ac66-4c85-b0ac-7798d09e914e</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>LaunchpadSI.py</StartupFile>
+    <StartupFile>reactionGame.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -23,6 +23,9 @@
   <ItemGroup>
     <Compile Include="fastFrame.py" />
     <Compile Include="LaunchpadSI.py" />
+    <Compile Include="reactionGame.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Animations.json" />
